@@ -1,6 +1,7 @@
 add_library(llvmsupermutate SHARED
   MutationEngine.cpp
 )
+
 target_include_directories(llvmsupermutate
   PUBLIC
     ${CLANG_INCLUDE_DIRS}
@@ -14,3 +15,5 @@ target_compile_definitions(llvmsupermutate
     ${CLANG_DEFINITIONS}
     ${LLVM_DEFINITIONS}
 )
+
+target_link_libraries(llvmsupermutate PRIVATE nlohmann_json::nlohmann_json)
