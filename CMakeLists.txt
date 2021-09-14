@@ -5,14 +5,13 @@ project(llvm-supermutate
   LANGUAGES CXX
 )
 
-# set(CMAKE_CXX_STANDARD 14)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM: ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "Using LLVM libs: ${LLVM_LIBRARY_DIRS}")
 
+set(LLVMSUPERMUTATE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 add_subdirectory(extern)
+add_subdirectory(lib)
 add_subdirectory(src)
