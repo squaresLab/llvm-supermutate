@@ -11,28 +11,29 @@
 
 #include "LLVMToSourceMapping.h"
 #include "Mutator.h"
+#include "Mutation.h"
 
 
-namespace llvmrepair {
-
+namespace llvmsupermutate {
 
 class MutationEngine {
 public:
-  MutationEngine(llvm::Module &module, llvmtosource::IRSourceMapping *sourceMapping);
+  MutationEngine(llvm::Module &module, LLVMToSourceMapping *sourceMapping);
   ~MutationEngine();
 
+  /** Injects a given mutation into the associated LLVM module */
   void inject(InstructionMutation *mutation);
 
-  /** Determines whether a given instruction has been mutated. */
+  /** Determines whether a given instruction has been mutated */
   bool hasBeenMutated(llvm::Instruction *instruction) const;
 
-  /** Uses the associated mutators to mutate a given instruction. */
+  /** Uses the associated mutators to mutate a given instruction */
   void mutate(llvm::Instruction *instruction);
 
-  /** Writes details of the injected mutations to a JSON file **/
+  /** Writes details of the injected mutations to a JSON file */
   void writeMutationTable(std::string filename);
 
-  /** Writes the mutated bitcode to a given file. **/
+  /** Writes the mutated bitcode to a given file */
   void writeMutatedBitcode(std::string filename);
 
   void addMutator(InstructionMutator *mutator);
@@ -58,5 +59,4 @@ private:
   llvm::Value* prepareInstructionLoader(llvm::Instruction *instruction);
 }; // MutationEngine
 
-
-} // llvmrepair
+} // llvmsupermutate
