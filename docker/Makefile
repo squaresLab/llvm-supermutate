@@ -9,7 +9,7 @@ llvm: builder
 	docker build -f Dockerfile.llvm -t ${DOCKER_ORG}/llvmsupermutate:llvm .
 
 llvmsupermutate: builder llvm
-	docker build -f Dockerfile.llvmsupermutate -t ${DOCKER_ORG}/llvmsupermutate .
+	docker build -f Dockerfile.llvmsupermutate -t ${DOCKER_ORG}/llvmsupermutate ..
 
 .PHONY: builder llvm llvmsupermutate
 

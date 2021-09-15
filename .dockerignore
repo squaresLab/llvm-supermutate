@@ -1,0 +1,9 @@
+**
+!**/CMakeLists.txt
+!src/
+!lib/
+!include/
+!extern/
+!**/.cpp
+!**/.h
+
