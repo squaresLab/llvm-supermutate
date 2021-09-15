@@ -1,10 +1,15 @@
 DOCKER_ORG=christimperley
 
+all: llvmsupermutate
+
 builder:
 	docker build -f Dockerfile.builder -t ${DOCKER_ORG}/llvmsupermutate:builder .
 
 llvm: builder
 	docker build -f Dockerfile.llvm -t ${DOCKER_ORG}/llvmsupermutate:llvm .
 
-.PHONY: builder llvm
+llvmsupermutate: builder llvm
+	docker build -f Dockerfile.llvmsupermutate -t ${DOCKER_ORG}/llvmsupermutate .
+
+.PHONY: builder llvm llvmsupermutate
 

@@ -1,0 +1,18 @@
+FROM christimperley/llvmsupermutate:builder
+COPY --from=christimperley/llvmsupermutate:llvm /opt/llvm11/ /opt/llvm11/
+WORKDIR /tmp/llvmsupermutate
+COPY . .
+ARG INSTALL_TO=/opt/llvmsupermutate
+RUN mkdir build \
+ && cd build \
+ && cmake \
+      -G Ninja \
+      -DCMAKE_C_COMPILER=/opt/llvm11/bin/clang \
+      -DCMAKE_CXX_COMPILER=/opt/llvm11/bin/clang++ \
+      -DCMAKE_LINKER=/opt/llvm11/bin/lld \
+      -DCMAKE_INSTALL_PREFIX="${INSTALL_TO}" \
+      -DCMAKE_CXX_FLAGS="-I/opt/llvm11/include -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS" \
+      .. \
+ && ninja \
+ && ninja install \
+ && rm -rf /tmp/*
