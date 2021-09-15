@@ -9,7 +9,7 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
 
-#include "LLVMToSourceMapping.h"
+#include "Mapping/LLVMToSourceMapping.h"
 #include "Mutator.h"
 #include "Mutation.h"
 
@@ -31,10 +31,10 @@ public:
   void mutate(llvm::Instruction *instruction);
 
   /** Writes details of the injected mutations to a JSON file */
-  void writeMutationTable(std::string filename);
+  void writeMutationTable(std::string const &filename);
 
   /** Writes the mutated bitcode to a given file */
-  void writeMutatedBitcode(std::string filename);
+  void writeMutatedBitcode(std::string const &filename);
 
   void addMutator(InstructionMutator *mutator);
 
@@ -45,6 +45,7 @@ private:
   LLVMToSourceMapping *sourceMapping;
   llvm::Function *loaderFunction;
 
+  // TODO prefer unique_ptr
   std::vector<InstructionMutator*> mutators;
   // TODO prefer unique_ptr?
   std::vector<InstructionMutation*> mutations;

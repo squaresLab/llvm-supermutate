@@ -6,6 +6,7 @@
 
 #include <llvm/IR/Instruction.h>
 
+#include "Mapping/LLVMToSourceMapping.h"
 #include "Mutator.h"
 
 
@@ -28,7 +29,7 @@ public:
   virtual llvm::Instruction* injectReplacement(llvm::BasicBlock *block) = 0;
 
   /** Produces a JSON description of this mutation */
-  virtual nlohmann::json toJSON(size_t id, llvmtosource::IRSourceMapping *sourceMapping) const;
+  virtual nlohmann::json toJSON(size_t id, LLVMToSourceMapping *sourceMapping) const;
 
 }; // InstructionMutation
 
