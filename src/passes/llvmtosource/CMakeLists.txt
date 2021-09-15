@@ -24,3 +24,8 @@ target_link_libraries(llvmtosource
     llvmsupermutate
     nlohmann_json::nlohmann_json
 )
+
+install(TARGETS llvmtosource
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)

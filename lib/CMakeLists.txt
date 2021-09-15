@@ -28,3 +28,8 @@ target_compile_options(llvmsupermutate
 )
 
 target_link_libraries(llvmsupermutate PRIVATE nlohmann_json::nlohmann_json)
+
+install(TARGETS llvmsupermutate
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
