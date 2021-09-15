@@ -27,33 +27,33 @@ public:
   LLVMToSourceMapping() noexcept;
   ~LLVMToSourceMapping();
 
-  FileInfo* get(llvm::DIFile *file) const;
-  FunctionInfo* get(llvm::Function *function) const;
-  InstructionInfo* get(llvm::Instruction *instruction) const;
-  GlobalInfo* get(llvm::GlobalVariable *value) const;
-  VariableInfo* get(llvm::DIVariable *variable) const;
-  ValueInfo* get(llvm::Value *value) const;
+  FileInfo* get(llvm::DIFile *file);
+  FunctionInfo* get(llvm::Function *function);
+  InstructionInfo* get(llvm::Instruction *instruction);
+  GlobalInfo* get(llvm::GlobalVariable *value);
+  VariableInfo* get(llvm::DIVariable *variable);
+  ValueInfo* get(llvm::Value *value);
 
-  size_t getID(llvm::DIFile *file) const;
-  size_t getID(llvm::Function *function) const;
-  size_t getID(llvm::Instruction *instruction) const;
-  size_t getID(llvm::GlobalVariable *global) const;
-  size_t getID(llvm::DIVariable *variable) const;
-  size_t getID(llvm::Value *value) const;
+  size_t getID(llvm::DIFile *file);
+  size_t getID(llvm::Function *function);
+  size_t getID(llvm::Instruction *instruction);
+  size_t getID(llvm::GlobalVariable *global);
+  size_t getID(llvm::DIVariable *variable);
+  size_t getID(llvm::Value *value);
 
-  FileInfo* getFileInfo(size_t id) const;
-  FunctionInfo* getFunctionInfo(size_t id) const;
-  InstructionInfo* getInstructionInfo(size_t id) const;
-  VariableInfo* getVariableInfo(size_t id) const;
-  GlobalInfo* getGlobalInfo(size_t id) const;
-  ValueInfo* getValueInfo(size_t id) const;
+  FileInfo* getFileInfo(size_t id);
+  FunctionInfo* getFunctionInfo(size_t id);
+  InstructionInfo* getInstructionInfo(size_t id);
+  VariableInfo* getVariableInfo(size_t id);
+  GlobalInfo* getGlobalInfo(size_t id);
+  ValueInfo* getValueInfo(size_t id);
 
-  llvm::DIFile* getFile(size_t id) const;
-  llvm::Function* getFunction(size_t id) const;
-  llvm::Instruction* getInstruction(size_t id) const;
-  llvm::GlobalVariable* getGlobal(size_t id) const;
-  llvm::DIVariable* getVariable(size_t id) const;
-  llvm::Value* getValue(size_t id) const;
+  llvm::DIFile* getFile(size_t id);
+  llvm::Function* getFunction(size_t id);
+  llvm::Instruction* getInstruction(size_t id);
+  llvm::GlobalVariable* getGlobal(size_t id);
+  llvm::DIVariable* getVariable(size_t id);
+  llvm::Value* getValue(size_t id);
 
   void dump();
 

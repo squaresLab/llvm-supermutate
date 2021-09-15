@@ -1,4 +1,12 @@
 add_library(llvmsupermutate SHARED
+  Mapping/File.cpp
+  Mapping/Function.cpp
+  Mapping/Global.cpp
+  Mapping/LLVMToSourceMapping.cpp
+  Mapping/Instruction.cpp
+  Mapping/Value.cpp
+  Mapping/Variable.cpp
+  Mutation.cpp
   MutationEngine.cpp
 )
 
