@@ -1,3 +1,4 @@
+# https://stackoverflow.com/questions/27178106/linking-libc-to-cmake-project-on-linux
 FROM christimperley/llvmsupermutate:builder
 COPY --from=christimperley/llvmsupermutate:llvm /opt/llvm11/ /opt/llvm11/
 WORKDIR /tmp/llvmsupermutate
@@ -10,7 +11,7 @@ RUN mkdir build \
       -DCMAKE_CXX_COMPILER=/opt/llvm11/bin/clang++ \
       -DCMAKE_LINKER=/opt/llvm11/bin/lld \
       -DCMAKE_INSTALL_PREFIX="${INSTALL_TO}" \
-      -DCMAKE_CXX_FLAGS="-I/opt/llvm11/include -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS" \
+      -DCMAKE_CXX_FLAGS="-stdlib=libc++ -I/opt/llvm11/include -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS" \
       .. \
  && ninja \
  && ninja install \
