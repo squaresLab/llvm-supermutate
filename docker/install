@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# This script creates portable Docker volumes for HiFix and LLVM11
+#
+set -eu
+HERE_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+IMAGE_TO_VOLUME="${HERE_DIR}/image_to_volume"
+DOCKER_ORG="christimperley"
+
+${IMAGE_TO_VOLUME} "${DOCKER_ORG}/llvmsupermutate" llvmsupermutate_opt /opt/llvmsupermutate
+${IMAGE_TO_VOLUME} "${DOCKER_ORG}/llvmsupermutate:llvm" llvm11_opt /opt/llvm11

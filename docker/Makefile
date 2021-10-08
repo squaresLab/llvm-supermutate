@@ -1,6 +1,6 @@
 DOCKER_ORG=christimperley
 
-all: llvmsupermutate
+all: install
 
 builder:
 	docker build -f Dockerfile.builder -t ${DOCKER_ORG}/llvmsupermutate:builder .
@@ -11,5 +11,8 @@ llvm: builder
 llvmsupermutate: builder llvm
 	docker build -f Dockerfile.llvmsupermutate -t ${DOCKER_ORG}/llvmsupermutate ..
 
-.PHONY: builder llvm llvmsupermutate
+install: llvmsupermutate
+	./install
+
+.PHONY: builder install llvm llvmsupermutate
 
