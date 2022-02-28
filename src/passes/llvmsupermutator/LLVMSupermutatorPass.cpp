@@ -7,6 +7,7 @@
 
 #include <llvm-supermutate/Mapping/LLVMToSourceMapping.h>
 #include <llvm-supermutate/MutationEngine.h>
+#include <llvm-supermutate/Mutators.h>
 
 
 static llvm::cl::opt<std::string> mutatedFilename(

@@ -14,18 +14,41 @@ public:
   {}
   ~BinOpcodeMutator(){};
 
-  // TODO: make this private?
-  // class Mutation : public InstructionMutation {
-  // public:
-  //   // void inject(
-  //   //   llvm::BasicBlock *mutantBlock,
-  //   //   llvm::BasicBlock *cloneBlock,
-  //   //   llvm::BasicBlock *remainderBlock,
-  //   //   llvm::PHINode *phi
-  //   // ) override;
-  // };
+  class Mutation : public InstructionMutation {
+  public:
+    void inject(
+      llvm::BasicBlock *mutantBlock,
+      llvm::BasicBlock *cloneBlock,
+      llvm::BasicBlock *remainderBlock,
+      llvm::PHINode *phi
+    ) override;
 
-  std::string const getName() override {
+    llvm::Instruction* getOriginal() const override {
+      return original;
+    }
+    InstructionMutator* getMutator() const override {
+      return mutator;
+    }
+    nlohmann::json toJSON(size_t id, LLVMToSourceMapping *sourceMapping) const override;
+
+  private:
+    Mutation(
+      BinOpcodeMutator *mutator,
+      llvm::Instruction *original,
+      llvm::Instruction::BinaryOps opcode
+    ) : mutator(mutator),
+        original(original),
+        opcode(opcode)
+    { }
+
+    InstructionMutator *mutator;
+    llvm::Instruction *original;
+    llvm::Instruction::BinaryOps opcode;
+
+    friend class BinOpcodeMutator;
+  };
+
+  std::string const getName() const override {
     return "BinOpcodeMutator";
   }
 
