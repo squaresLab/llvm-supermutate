@@ -18,7 +18,9 @@ COPY --from=christimperley/llvmsupermutate:llvm /opt/llvm11/ /opt/llvm11/
 WORKDIR /tmp/llvmsupermutate
 COPY . .
 ARG INSTALL_TO=/opt/llvmsupermutate
-RUN mkdir build \
+RUN mkdir -p /opt/llvmsupermutate/bin \
+ && mv docker/llvmsupermutate /opt/llvmsupermutate/bin \
+ && mkdir build \
  && cd build \
  && cmake \
       -G Ninja \

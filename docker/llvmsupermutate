@@ -1,0 +1,26 @@
+#!/bin/bash
+set -eu
+
+DIR_LLVM=/opt/llvm11
+DIR_LLVMSUPERMUTATE=/opt/llvmsupermutate
+
+function report_error {
+  echo "FATAL ERROR: $1"
+  exit 1
+}
+
+# ensure that mounts are correct
+if [[ ! -d "${DIR_LLVM}" ]]; then
+    report_error "required volume mount not found: ${DIR_LLVM}"
+fi
+if [[ ! -d "${DIR_LLVMSUPERMUTATE}" ]]; then
+    report_error "required volume mount not found: ${DIR_LLVMSUPERMUTATE}"
+fi
+
+LD_LIBRARY_PATH="${DIR_LLVMSUPERMUTATE}/lib:${DIR_LLVM}/lib:${LD_LIBRARY_PATH:-}"
+
+"${DIR_LLVM}/bin/opt" \
+  -load "${DIR_LLVMSUPERMUTATE}/lib/libllvmsupermutate.so" \
+  -load "${DIR_LLVMSUPERMUTATE}/lib/libllvmtosource.so" \
+  -load "${DIR_LLVMSUPERMUTATE}/lib/libllvmsupermutator.so" \
+  $@
