@@ -48,7 +48,7 @@ bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
 
 char llvmsupermutate::LLVMSupermutatorPass::ID = 0;
 static RegisterPass<llvmsupermutate::LLVMSupermutatorPass> X(
-  "llvmsupermutate", "Generates a supermutant from a given LLVM bitcode file", false, true
+  "supermutate", "Generates a supermutant from a given LLVM bitcode file", false, true
 );
 
 static RegisterStandardPasses Y(

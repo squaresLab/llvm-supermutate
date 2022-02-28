@@ -55,7 +55,7 @@ void MutationEngine::mutate(llvm::Instruction *instruction) {
     return;
   }
 
-  llvm::outs() << "DEBUG: mutating LLVM instruction [" << std::addressof(instruction) << "]: ";
+  llvm::outs() << "DEBUG: mutating LLVM instruction [" << std::addressof(instruction) << "]\n";
 
   for (auto *mutator : mutators) {
     mutator->mutate(instruction);

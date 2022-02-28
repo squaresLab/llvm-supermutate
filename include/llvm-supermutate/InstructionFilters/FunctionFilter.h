@@ -21,7 +21,7 @@ public:
   }
 
   bool isMutable(llvm::Function const *function) const {
-    return true;
+    return restrictToFunctions.find(function->getName().str()) != restrictToFunctions.end();
   }
 
   bool isMutable(llvm::Instruction const &instruction) const override {

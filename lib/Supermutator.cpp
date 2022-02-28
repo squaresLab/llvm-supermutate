@@ -22,8 +22,10 @@ void Supermutator::run() {
   for (llvm::Function &function : module) {
     for (auto &block : function) {
       for (auto &instruction : block) {
-        if (isMutable(instruction))
+        if (isMutable(instruction)) {
+          llvm::outs() << "[DEBUG] supermutating instruction: " << std::addressof(instruction) << "\n";
           mutationEngine.mutate(&instruction);
+        }
       }
     }
   }
