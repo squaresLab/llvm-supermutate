@@ -33,14 +33,18 @@ bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
   // construct the mutation engine
   MutationEngine mutationEngine(module, mapping);
 
-  // TODO add mutators
   // TODO allow users to specify operators and their settings via JSON config file
   // mutationEngine.addMutator(new ICmpMutator(mutationEngine));
-  // mutationEngine.addMutator(new BinOpcodeMutator(mutationEngine));
-  // mutationEngine.addMutator(new GuardStatementMutator(mutationEngine, fixLocalization));
+  mutationEngine.addMutator(new BinOpcodeMutator(mutationEngine));
 
-  // FIXME decide which instructions should be mutated
-  // for now, we simply take the
+  // TODO decide which instructions should be mutated
+  // for now, we simply mutate all instructions in a given function
+  //
+  // TODO idea: add the concept of InstructionFilters
+  // - used to decide which instructions should be mutated
+  // - simple filters can be chained together
+  // - e.g., ignore certain instructions
+  // - e.g., restrict to certain functions
 
   // write the mutation table to disk
   mutationEngine.writeMutationTable("mutations.json");
