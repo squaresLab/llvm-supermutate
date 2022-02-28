@@ -16,6 +16,13 @@ static llvm::cl::opt<std::string> mutatedFilename(
   llvm::cl::Required
 );
 
+static llvm::cl::opt<std::string> targetFunctionName(
+  "mutate-function",
+  llvm::cl::desc("The name of the function that should be supermutated."),
+  llvm::cl::value_desc("function name"),
+  llvm::cl::Required
+);
+
 using namespace llvm;
 using namespace llvmsupermutate;
 
@@ -26,11 +33,13 @@ bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
   MutationEngine mutationEngine(module, mapping);
 
   // TODO add mutators
+  // TODO allow users to specify operators and their settings via JSON config file
   // mutationEngine.addMutator(new ICmpMutator(mutationEngine));
   // mutationEngine.addMutator(new BinOpcodeMutator(mutationEngine));
   // mutationEngine.addMutator(new GuardStatementMutator(mutationEngine, fixLocalization));
 
   // FIXME decide which instructions should be mutated
+  // for now, we simply take the
 
   // write the mutation table to disk
   mutationEngine.writeMutationTable("mutations.json");
