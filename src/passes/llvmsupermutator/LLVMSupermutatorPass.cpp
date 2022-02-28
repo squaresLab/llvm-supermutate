@@ -31,7 +31,14 @@ using namespace llvmsupermutate;
 bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
   auto supermutator = Supermutator(module, mutatedFilename);
 
-  // TODO allow users to specify operators and their settings via JSON config file
+  // TODO implement a JSON-based config file
+
+  // add instruction filters
+  auto functionFilter = std::make_unique<FunctionFilter>();
+  functionFilter->allowFunction(targetFunctionName);
+  supermutator.addFilter(std::move(functionFilter));
+
+  // add mutators
   supermutator.addMutator(new BinOpcodeMutator(supermutator.getMutationEngine()));
 
   supermutator.run();
