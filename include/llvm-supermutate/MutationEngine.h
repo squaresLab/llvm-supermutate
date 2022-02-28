@@ -36,6 +36,7 @@ public:
   /** Writes the mutated bitcode to a given file */
   void writeMutatedBitcode(std::string const &filename);
 
+  /** Registers a given mutator with this engine */
   void addMutator(InstructionMutator *mutator);
 
 private:
@@ -47,13 +48,14 @@ private:
 
   // TODO prefer unique_ptr
   std::vector<InstructionMutator*> mutators;
-  // TODO prefer unique_ptr?
+  // TODO prefer unique_ptr; yes
   std::vector<InstructionMutation*> mutations;
 
   std::unordered_map<llvm::Instruction*, llvm::Instruction*> instructionToClone;
   std::unordered_map<llvm::Instruction*, llvm::SwitchInst*> instructionToSwitchMap;
   std::unordered_map<llvm::Instruction*, llvm::PHINode*> instructionToPhiMap;
   std::unordered_map<llvm::Instruction*, llvm::BasicBlock*> instructionToDestinationBlock;
+  std::unordered_map<llvm::Instruction*, llvm::BasicBlock*> instructionToCloneBlock;
 
   void prepare();
   void prepareInstruction(llvm::Instruction *instruction);

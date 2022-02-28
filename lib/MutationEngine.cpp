@@ -13,7 +13,10 @@
 
 namespace llvmsupermutate {
 
-MutationEngine::MutationEngine(llvm::Module &module, LLVMToSourceMapping *sourceMapping) :
+MutationEngine::MutationEngine(
+  llvm::Module &module,
+  LLVMToSourceMapping *sourceMapping
+) :
   module(module),
   context(module.getContext()),
   sourceMapping(sourceMapping),
@@ -23,7 +26,8 @@ MutationEngine::MutationEngine(llvm::Module &module, LLVMToSourceMapping *source
   instructionToClone(),
   instructionToSwitchMap(),
   instructionToPhiMap(),
-  instructionToDestinationBlock()
+  instructionToDestinationBlock(),
+  instructionToCloneBlock()
 {
   prepare();
 }
@@ -31,9 +35,10 @@ MutationEngine::MutationEngine(llvm::Module &module, LLVMToSourceMapping *source
 void MutationEngine::writeMutatedBitcode(std::string const &filename) {
   llvm::outs() << "writing mutated bitcode to file: " << filename << "\n";
 
+  // TODO remove or else put this into a log file
   // DEBUGGING
-  module.dump();
-  llvm::outs() << "\n";
+  // module.dump();
+  // llvm::outs() << "\n";
 
   std::error_code error_code;
   llvm::raw_fd_ostream out(filename, error_code);
@@ -43,9 +48,14 @@ void MutationEngine::writeMutatedBitcode(std::string const &filename) {
 
 void MutationEngine::mutate(llvm::Instruction *instruction) {
   if (hasBeenMutated(instruction)) {
-    llvm::outs() << "WARNING: ignore mutate request [instruction already mutated]\n";
+    llvm::outs()
+      << "WARNING: ignore mutate request: instruction already mutated ["
+      << std::addressof(instruction)
+      << "]\n";
     return;
   }
+
+  llvm::outs() << "DEBUG: mutating LLVM instruction [" << std::addressof(instruction) << "]: ";
 
   for (auto *mutator : mutators) {
     mutator->mutate(instruction);
@@ -83,20 +93,19 @@ void MutationEngine::inject(InstructionMutation *mutation) {
   auto *mutantBlock = llvm::BasicBlock::Create(context, "", function);
   mutantSwitch->addCase(builder.getInt64(id), mutantBlock);
 
-  // inject the mutated/replacement instruction into the generated block
-
-  // auto *replacementInstruction = mutation->getReplacement();
-  auto *replacementInstruction = mutation->injectReplacement(mutantBlock);
-  // mutantBlock->getInstList().push_back(replacementInstruction);
-
-  // insert an unconditional branch to the destination block, unless the original
-  // instruction was a terminator
-  if (!instruction->isTerminator()) {
-    builder.SetInsertPoint(mutantBlock);
-    builder.CreateBr(instructionToDestinationBlock[instruction]);
-    llvm::PHINode *phi = instructionToPhiMap[instruction];
-    phi->addIncoming(llvm::cast<llvm::Value>(replacementInstruction), mutantBlock);
+  // find the phi node for the original instruction
+  llvm::PHINode *phi = nullptr;
+  if (instructionToPhiMap.find(instruction) != instructionToPhiMap.end()) {
+    phi = instructionToPhiMap[instruction];
   }
+
+  // inject the mutated/replacement instruction into the generated block
+  mutation->inject(
+    mutantBlock,
+    instructionToCloneBlock[instruction],
+    instructionToDestinationBlock[instruction],
+    phi
+  );
 }
 
 bool MutationEngine::hasBeenMutated(llvm::Instruction *instruction) const {
@@ -134,6 +143,18 @@ void MutationEngine::prepare() {
       strtolType,
       llvm::Function::ExternalLinkage,
       "strtol",
+      module
+    );
+  }
+
+  // declare dso_local i32 @printf(i8* %0, ...) #3
+  llvm::Function *printFunction = module.getFunction("printf");
+  if (printFunction == nullptr) {
+    auto *printType = llvm::FunctionType::get(i32Type, {i8PtrType}, true);
+    printFunction = llvm::Function::Create(
+      printType,
+      llvm::Function::ExternalLinkage,
+      "printf",
       module
     );
   }
@@ -193,13 +214,12 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     << "LLVMREPAIR_INSTRUCTION_MUTANT_"
     << sourceMapping->get(instruction)->getID();
 
+  auto *envVarNamePtr = builder.CreateGlobalStringPtr(envVarNameBuffer.str());
+
   // use getenv to fetch optional mutant ID
   auto *getenvFunction = module.getFunction("getenv");
   std::vector<llvm::Value*> getenvArgs = {
-    llvm::ConstantExpr::getInBoundsGetElementPtr(
-      i8Type,
-      builder.CreateGlobalStringPtr(envVarNameBuffer.str()),
-      zeroConstant)
+    llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
   };
   auto *getenvResult = builder.CreateCall(getenvFunction->getFunctionType(), getenvFunction, getenvArgs, "");
 
@@ -223,6 +243,18 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     ""
   );
   builder.CreateStore(strtolResult, global);
+
+  // DEBUGGING: call stderr to show that mutation has been set successfully
+  auto *printfFunction = module.getFunction("printf");
+  auto *activationStrPtr = builder.CreateGlobalStringPtr("[LLVM-SUPERMUTATE] ACTIVATE MUTATION %d AT %s\n");
+  std::vector<llvm::Value*> printfArgs = {
+    llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, activationStrPtr, zeroConstant),
+    strtolResult,
+    llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
+  };
+  builder.CreateCall(printfFunction->getFunctionType(), printfFunction, printfArgs, "");
+
+  // continue to the successor block
   builder.CreateBr(successorBlock);
 
   // implement non-null branching
@@ -256,6 +288,7 @@ void MutationEngine::prepareInstruction(llvm::Instruction *instruction) {
   auto *cloneBlock = llvm::BasicBlock::Create(context, "", function);
   auto *cloneInstruction = instruction->clone();
   instructionToClone.emplace(instruction, cloneInstruction);
+  instructionToCloneBlock.emplace(instruction, cloneBlock);
   cloneBlock->getInstList().push_back(cloneInstruction);
 
   // create a switch instruction and insert immediately before the original instruction
