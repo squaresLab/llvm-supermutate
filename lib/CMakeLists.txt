@@ -9,6 +9,7 @@ add_library(llvmsupermutate SHARED
   Mutators/BinOpcodeMutator.cpp
   Mutation.cpp
   MutationEngine.cpp
+  Supermutator.cpp
 )
 
 target_include_directories(llvmsupermutate

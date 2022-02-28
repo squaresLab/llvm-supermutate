@@ -37,21 +37,6 @@ bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
   // mutationEngine.addMutator(new ICmpMutator(mutationEngine));
   mutationEngine.addMutator(new BinOpcodeMutator(mutationEngine));
 
-  // TODO decide which instructions should be mutated
-  // for now, we simply mutate all instructions in a given function
-  //
-  // TODO idea: add the concept of InstructionFilters
-  // - used to decide which instructions should be mutated
-  // - simple filters can be chained together
-  // - e.g., ignore certain instructions
-  // - e.g., restrict to certain functions
-
-  // write the mutation table to disk
-  mutationEngine.writeMutationTable("mutations.json");
-
-  // write the mutated bitcode to disk
-  mutationEngine.writeMutatedBitcode(mutatedFilename);
-
   return true;
 }
 
