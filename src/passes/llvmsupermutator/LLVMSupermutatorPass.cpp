@@ -6,8 +6,9 @@
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
 
 #include <llvm-supermutate/Mapping/LLVMToSourceMapping.h>
-#include <llvm-supermutate/MutationEngine.h>
+#include <llvm-supermutate/InstructionFilters.h>
 #include <llvm-supermutate/Mutators.h>
+#include <llvm-supermutate/Supermutator.h>
 
 
 static llvm::cl::opt<std::string> mutatedFilename(
@@ -28,14 +29,12 @@ using namespace llvm;
 using namespace llvmsupermutate;
 
 bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
-  auto *mapping = LLVMToSourceMapping::build(module);
-
-  // construct the mutation engine
-  MutationEngine mutationEngine(module, mapping);
+  auto supermutator = Supermutator(module, mutatedFilename);
 
   // TODO allow users to specify operators and their settings via JSON config file
-  // mutationEngine.addMutator(new ICmpMutator(mutationEngine));
-  mutationEngine.addMutator(new BinOpcodeMutator(mutationEngine));
+  supermutator.addMutator(new BinOpcodeMutator(supermutator.getMutationEngine()));
+
+  supermutator.run();
 
   return true;
 }

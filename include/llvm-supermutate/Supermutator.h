@@ -27,6 +27,9 @@ public:
   /** Determines whether a given instruction is considered to be mutable */
   bool isMutable(llvm::Instruction const &instruction) const;
 
+  /** Returns the associated mutation engine */
+  MutationEngine& getMutationEngine() { return mutationEngine; }
+
   /** Constructs the supermutant */
   void run();
 
