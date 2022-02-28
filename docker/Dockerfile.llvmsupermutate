@@ -1,4 +1,5 @@
 # https://stackoverflow.com/questions/27178106/linking-libc-to-cmake-project-on-linux
+# https://stackoverflow.com/questions/37366291/undefined-symbol-for-self-built-llvm-opt
 FROM christimperley/llvmsupermutate:builder
 COPY --from=christimperley/llvmsupermutate:llvm /opt/llvm11/ /opt/llvm11/
 WORKDIR /tmp/llvmsupermutate
