@@ -32,14 +32,17 @@ MutationEngine::MutationEngine(
   prepare();
 }
 
+MutationEngine::~MutationEngine() {
+  for (auto mutator : mutators) {
+    delete mutator;
+  }
+  for (auto mutation : mutations) {
+    delete mutation;
+  }
+}
+
 void MutationEngine::writeMutatedBitcode(std::string const &filename) {
   llvm::outs() << "writing mutated bitcode to file: " << filename << "\n";
-
-  // TODO remove or else put this into a log file
-  // DEBUGGING
-  // module.dump();
-  // llvm::outs() << "\n";
-
   std::error_code error_code;
   llvm::raw_fd_ostream out(filename, error_code);
   llvm::WriteBitcodeToFile(module, out);
@@ -88,6 +91,7 @@ void MutationEngine::inject(InstructionMutation *mutation) {
   // assign an ID to the mutant and log it
   size_t id = nextMutantId++;
   mutations.push_back(mutation);
+  llvm::outs() << "DEBUG: registered mutation with ID [" << id << "]\n";
 
   // create a new block for this mutation and add it to the switch
   auto *mutantSwitch = instructionToSwitchMap[instruction];
@@ -102,12 +106,14 @@ void MutationEngine::inject(InstructionMutation *mutation) {
   }
 
   // inject the mutated/replacement instruction into the generated block
+  llvm::outs() << "TRACE: injecting mutation into block...\n";
   mutation->inject(
     mutantBlock,
     instructionToCloneBlock[instruction],
     instructionToDestinationBlock[instruction],
     phi
   );
+  llvm::outs() << "TRACE: injected mutation into block\n";
 }
 
 bool MutationEngine::hasBeenMutated(llvm::Instruction *instruction) const {
@@ -212,6 +218,7 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
       module.getOrInsertGlobal(varnameBuffer.str(), i64Type)
   );
   global->setInitializer(zeroConstant);
+  llvm::outs() << "[DEBUG] created global variable\n";
 
   // load value of variable inside loader function
   std::stringstream envVarNameBuffer;
@@ -220,6 +227,7 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     << sourceMapping->get(instruction)->getID();
 
   auto *envVarNamePtr = builder.CreateGlobalStringPtr(envVarNameBuffer.str());
+  llvm::outs() << "[DEBUG] created env var name\n";
 
   // use getenv to fetch optional mutant ID
   auto *getenvFunction = module.getFunction("getenv");
@@ -227,6 +235,7 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
   };
   auto *getenvResult = builder.CreateCall(getenvFunction->getFunctionType(), getenvFunction, getenvArgs, "");
+  llvm::outs() << "[DEBUG] created getenv result\n";
 
   // create new block for nonnull_getenv
   // - calls strtol to obtain mutant ID
@@ -248,6 +257,7 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     ""
   );
   builder.CreateStore(strtolResult, global);
+  llvm::outs() << "[DEBUG] created new block\n";
 
   // DEBUGGING: call stderr to show that mutation has been set successfully
   auto *printfFunction = module.getFunction("printf");
@@ -258,9 +268,11 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
   };
   builder.CreateCall(printfFunction->getFunctionType(), printfFunction, printfArgs, "");
+  llvm::outs() << "[DEBUG] added debugging statement\n";
 
   // continue to the successor block
   builder.CreateBr(successorBlock);
+  llvm::outs() << "[DEBUG] added branch to successor block\n";
 
   // implement non-null branching
   // - remove the br instruction that was generated when splitting the entry block
@@ -271,6 +283,7 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
     llvm::ConstantPointerNull::get(i8PtrType)
   );
   builder.CreateCondBr(nullCheckResult, successorBlock, nonnullBlock);
+  llvm::outs() << "[DEBUG] added conditional branch\n";
 
   return global;
 }
@@ -283,6 +296,12 @@ void MutationEngine::prepareInstruction(llvm::Instruction *instruction) {
 
   // inject code to determine the mutation to use for this instruction at run-time
   auto *global = prepareInstructionLoader(instruction);
+  llvm::outs()
+    << "DEBUG: prepared instruction loader ["
+    << std::addressof(instruction)
+    << "]: ";
+  instruction->print(llvm::outs());
+  llvm::outs() << "\n";
 
   // first of all, we need to create a new basic block for the original instruction
   // we don't want to move the original instruction at this point -- that would create problems
@@ -333,6 +352,10 @@ void MutationEngine::prepareInstruction(llvm::Instruction *instruction) {
 
   // NOTE: we don't remove the original instruction at this point
   // we wait until we're done with injecting mutations before we remove the original instruction
+  llvm::outs()
+    << "DEBUG: prepared instruction ["
+    << std::addressof(instruction)
+    << "]\n";
 }
 
 void MutationEngine::writeMutationTable(std::string const &filename) {

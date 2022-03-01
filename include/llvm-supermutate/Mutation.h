@@ -14,6 +14,8 @@ namespace llvmsupermutate {
 
 class InstructionMutation {
 public:
+  virtual ~InstructionMutation(){} 
+
   /** Returns the mutator that produced this mutation */
   virtual InstructionMutator* getMutator() const = 0;
 

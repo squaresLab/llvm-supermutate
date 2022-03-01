@@ -1,6 +1,8 @@
 #include <llvm-supermutate/Supermutator.h>
 #include <llvm-supermutate/InstructionFilters.h>
 
+#include <unordered_set>
+
 
 namespace llvmsupermutate {
 
@@ -31,17 +33,26 @@ bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
 }
 
 void Supermutator::run() {
-  sourceMapping->dump();
-
+  llvm::outs() << "DEBUG: finding mutable instructions...\n";
+  std::unordered_set<llvm::Instruction*> instructions;
   for (llvm::Function &function : module) {
     for (auto &block : function) {
       for (auto &instruction : block) {
-        if (isMutable(instruction)) {
-          mutationEngine.mutate(std::addressof(instruction));
-        }
+        if (isMutable(instruction))
+          instructions.insert(&instruction);
       }
     }
   }
+  llvm::outs()
+    << "DEBUG: found "
+    << instructions.size()
+    << " mutable instructions\n";
+
+  llvm::outs() << "DEBUG: generating mutations...\n";
+  for (auto instruction : instructions) {
+    mutationEngine.mutate(instruction);
+  }
+  llvm::outs() << "DEBUG: finished generating mutations\n";
 
   mutationEngine.writeMutationTable("mutations.json");
   mutationEngine.writeMutatedBitcode(outputFilename);

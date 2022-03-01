@@ -16,7 +16,7 @@ target_compile_definitions(llvmtosource
 
 target_compile_options(llvmtosource
   PRIVATE
-    -Wall -Werror -fno-rtti
+    -Wall -Werror -fno-rtti -g
 )
 
 target_link_libraries(llvmtosource
