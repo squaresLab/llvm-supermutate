@@ -5,6 +5,9 @@
 
 namespace llvmsupermutate {
 
+/**
+ * This filter prevents supermutation instrumentation from being subject to mutation.
+ */
 class InstrumentationFilter : public InstructionFilter {
 public:
   InstrumentationFilter(){}

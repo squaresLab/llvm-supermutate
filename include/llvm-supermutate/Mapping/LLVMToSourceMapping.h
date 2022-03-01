@@ -55,6 +55,8 @@ public:
   llvm::DIVariable* getVariable(size_t id);
   llvm::Value* getValue(size_t id);
 
+  bool hasInfo(llvm::Instruction *instruction) const;
+
   void dump();
 
   /** Saves the contents of this source mapping to disk */

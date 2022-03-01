@@ -58,6 +58,10 @@ LLVMToSourceMapping::~LLVMToSourceMapping() {
   }
 }
 
+bool LLVMToSourceMapping::hasInfo(llvm::Instruction *instruction) const {
+  return instructionToID.find(instruction) != instructionToID.end();
+}
+
 void LLVMToSourceMapping::save(std::string const &filename) const {
   std::ofstream o(filename);
   o << std::setw(2) << toJSON() << std::endl;

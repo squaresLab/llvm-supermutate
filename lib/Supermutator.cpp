@@ -11,8 +11,7 @@ Supermutator::Supermutator(llvm::Module &module, std::string const &outputFilena
   outputFilename(outputFilename)
 {
   addFilter(std::make_unique<InstrumentationFilter>());
-
-  // TODO add filter that ensures instructions have source information!
+  addFilter(std::make_unique<DebugInfoFilter>(sourceMapping));
 }
 
 void Supermutator::addMutator(InstructionMutator *mutator) {
