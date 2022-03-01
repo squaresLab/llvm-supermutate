@@ -11,7 +11,7 @@ namespace llvmsupermutate {
 class FunctionFilter : public InstructionFilter {
 public:
   FunctionFilter() : restrictToFunctions() {}
-  FunctionFilter(std::unordered_set<std::string> restrictToFunctions)
+  FunctionFilter(std::unordered_set<std::string> &restrictToFunctions)
     : restrictToFunctions(restrictToFunctions)
   {}
   ~FunctionFilter(){};

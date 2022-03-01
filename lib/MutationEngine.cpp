@@ -55,7 +55,9 @@ void MutationEngine::mutate(llvm::Instruction *instruction) {
     return;
   }
 
-  llvm::outs() << "DEBUG: mutating LLVM instruction [" << std::addressof(instruction) << "]\n";
+  llvm::outs() << "DEBUG: mutating LLVM instruction [" << std::addressof(instruction) << "]: ";
+  instruction->print(llvm::outs());
+  llvm::outs() << "\n";
 
   for (auto *mutator : mutators) {
     mutator->mutate(instruction);
@@ -181,9 +183,12 @@ void MutationEngine::prepare() {
 }
 
 llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruction) {
-  llvm::outs() << "DEBUG: preparing mutation loader for instruction [";
+  llvm::outs()
+    << "DEBUG: preparing mutation loader for instruction ["
+    << std::addressof(instruction)
+    << "]: ";
   instruction->print(llvm::outs());
-  llvm::outs() << "]\n";
+  llvm::outs() << "\n";
 
   llvm::IRBuilder<> builder(context);
 
