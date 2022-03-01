@@ -6,10 +6,13 @@ namespace llvmsupermutate {
 
 Supermutator::Supermutator(llvm::Module &module, std::string const &outputFilename)
 : module(module),
-  mutationEngine(module, LLVMToSourceMapping::build(module)),
+  sourceMapping(LLVMToSourceMapping::build(module)),
+  mutationEngine(module, sourceMapping),
   outputFilename(outputFilename)
 {
   addFilter(std::make_unique<InstrumentationFilter>());
+
+  // TODO add filter that ensures instructions have source information!
 }
 
 void Supermutator::addMutator(InstructionMutator *mutator) {
@@ -29,13 +32,12 @@ bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
 }
 
 void Supermutator::run() {
-  // FIXME don't mutate the actual supermutation instrumentation!
+  sourceMapping->dump();
+
   for (llvm::Function &function : module) {
     for (auto &block : function) {
       for (auto &instruction : block) {
         if (isMutable(instruction)) {
-          // FIXME bad things are happening to the instruction address here!
-          llvm::outs() << "[DEBUG] supermutating instruction: " << std::addressof(instruction) << "\n";
           mutationEngine.mutate(std::addressof(instruction));
         }
       }

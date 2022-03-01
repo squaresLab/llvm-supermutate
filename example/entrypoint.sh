@@ -12,7 +12,7 @@ export LD_LIBRARY_PATH="${LLVMSUPERMUTATE_DIR}/lib:${LLVM11_DIR}/lib:${LD_LIBRAR
 pushd "${DIR_EXAMPLE}"
 
 # generate .bc and .ll
-clang-11 -emit-llvm -o foo.bc -c foo.c
+clang-11 -g -emit-llvm -o foo.bc -c foo.c
 llvm-dis -o foo.ll foo.bc
 
 exec $@

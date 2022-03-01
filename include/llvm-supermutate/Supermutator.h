@@ -31,6 +31,7 @@ public:
 
 private:
   llvm::Module &module;
+  LLVMToSourceMapping *sourceMapping;
   MutationEngine mutationEngine;
 
   /** The name of the file to which the supermutated bitcode should be written */
