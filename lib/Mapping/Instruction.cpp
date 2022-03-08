@@ -30,8 +30,7 @@ const llvm::DebugLoc& InstructionInfo::getDebugLoc() const {
 
 llvm::Optional<std::pair<unsigned, unsigned>> InstructionInfo::getLineCol() const {
   auto &debugLoc = getDebugLoc();
-
-  if (debugLoc.isImplicitCode()) {
+  if  (debugLoc.isImplicitCode()) {
     return llvm::Optional<std::pair<unsigned, unsigned>>();
   }
 
@@ -40,6 +39,10 @@ llvm::Optional<std::pair<unsigned, unsigned>> InstructionInfo::getLineCol() cons
 
 std::string InstructionInfo::getFilename() const {
   return getFileInfo()->getFilename();
+}
+
+std::string InstructionInfo::getDirectory() const {
+  return getFileInfo()->getDirectory();
 }
 
 bool InstructionInfo::isImplicit() const {

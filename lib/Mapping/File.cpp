@@ -20,6 +20,10 @@ std::string FileInfo::getFilename() const {
   return file->getFilename().str();
 }
 
+std::string FileInfo::getDirectory() const {
+  return file->getDirectory().str();
+}
+
 json FileInfo::toJSON() const {
   return {
     {"id", id},

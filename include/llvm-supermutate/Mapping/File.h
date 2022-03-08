@@ -16,6 +16,7 @@ public:
   size_t getId() const;
   llvm::DIFile* getFile() const;
   std::string getFilename() const;
+  std::string getDirectory() const;
 
   nlohmann::json toJSON() const;
 

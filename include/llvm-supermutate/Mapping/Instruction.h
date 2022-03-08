@@ -25,6 +25,7 @@ public:
   const llvm::DebugLoc& getDebugLoc() const;
   llvm::Optional<std::pair<unsigned, unsigned>> getLineCol() const;
   std::string getFilename() const;
+  std::string getDirectory() const;
   bool isImplicit() const;
 
   nlohmann::json toJSON() const;
