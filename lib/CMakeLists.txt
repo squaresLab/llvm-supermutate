@@ -10,6 +10,7 @@ add_library(llvmsupermutate SHARED
   Mutation.cpp
   MutationEngine.cpp
   Supermutator.cpp
+  SupermutatorConfig.cpp
 )
 
 target_include_directories(llvmsupermutate

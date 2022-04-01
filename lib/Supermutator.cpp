@@ -6,11 +6,11 @@
 
 namespace llvmsupermutate {
 
-Supermutator::Supermutator(llvm::Module &module, std::string const &outputFilename)
+Supermutator::Supermutator(llvm::Module &module)
 : module(module),
   sourceMapping(LLVMToSourceMapping::build(module)),
   mutationEngine(module, sourceMapping),
-  outputFilename(outputFilename)
+  outputFilename("supermutant.bc")
 {
   addFilter(std::make_unique<InstrumentationFilter>());
   addFilter(std::make_unique<DebugInfoFilter>(sourceMapping));

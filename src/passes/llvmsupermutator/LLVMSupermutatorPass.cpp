@@ -6,22 +6,13 @@
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
 
 #include <llvm-supermutate/Mapping/LLVMToSourceMapping.h>
-#include <llvm-supermutate/InstructionFilters.h>
-#include <llvm-supermutate/Mutators.h>
-#include <llvm-supermutate/Supermutator.h>
+#include <llvm-supermutate/SupermutatorConfig.h>
 
 
-static llvm::cl::opt<std::string> mutatedFilename(
-  "mutated-filename",
-  llvm::cl::desc("The name of file to which the supermutated bitcode should be written."),
+static llvm::cl::opt<std::string> configurationFile(
+  "supermutate-config",
+  llvm::cl::desc("The configuration file that should be used by LLVM supermutate."),
   llvm::cl::value_desc("filename"),
-  llvm::cl::Required
-);
-
-static llvm::cl::opt<std::string> targetFunctionName(
-  "mutate-function",
-  llvm::cl::desc("The name of the function that should be supermutated."),
-  llvm::cl::value_desc("function name"),
   llvm::cl::Required
 );
 
@@ -29,20 +20,9 @@ using namespace llvm;
 using namespace llvmsupermutate;
 
 bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
-  auto supermutator = Supermutator(module, mutatedFilename);
-
-  // TODO implement a JSON-based config file
-
-  // add instruction filters
-  auto functionFilter = std::make_unique<FunctionFilter>();
-  functionFilter->allowFunction(targetFunctionName);
-  supermutator.addFilter(std::move(functionFilter));
-
-  // add mutators
-  supermutator.addMutator(new BinOpcodeMutator(supermutator.getMutationEngine()));
-
+  auto config = SupermutatorConfig::load(configurationFile);
+  auto supermutator = config.build(module);
   supermutator.run();
-
   return true;
 }
 
