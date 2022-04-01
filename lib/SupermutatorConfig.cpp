@@ -2,11 +2,20 @@
 #include <llvm-supermutate/Mutators.h>
 #include <llvm-supermutate/SupermutatorConfig.h>
 
+#include <experimental/filesystem>
 #include <fstream>
 
 namespace llvmsupermutate {
 
 SupermutatorConfig SupermutatorConfig::load(std::string const &filename) {
+  if (!std::experimental::filesystem::exists(filename)) {
+    llvm::errs()
+      << "FATAL ERROR: configuration file not found: "
+      << filename
+      << "\n";
+    exit(1);
+  }
+
   nlohmann::json j;
   std::ifstream input(filename);
   input >> j;

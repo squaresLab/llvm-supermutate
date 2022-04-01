@@ -30,7 +30,7 @@ target_compile_options(llvmsupermutate
     -Wall -Werror -fno-rtti -g
 )
 
-target_link_libraries(llvmsupermutate PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(llvmsupermutate PRIVATE nlohmann_json::nlohmann_json stdc++fs)
 
 install(TARGETS llvmsupermutate
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
