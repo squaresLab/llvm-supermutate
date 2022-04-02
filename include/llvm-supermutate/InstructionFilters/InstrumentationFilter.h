@@ -15,7 +15,11 @@ public:
 
   bool isMutable(llvm::Instruction const &instruction) const override {
     if (auto *callInst = llvm::dyn_cast<llvm::CallInst>(&instruction)) {
-      return callInst->getCalledFunction()->getName().str() != "__llvm_mutate_load_mutations__";
+      auto *calledFunction = callInst->getCalledFunction();
+      if (calledFunction == nullptr) {
+        return false;
+      }
+      return calledFunction->getName().str() != "__llvm_mutate_load_mutations__";
     }
     return true;
   }
