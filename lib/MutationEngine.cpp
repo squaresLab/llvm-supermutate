@@ -260,15 +260,15 @@ llvm::Value* MutationEngine::prepareInstructionLoader(llvm::Instruction *instruc
   llvm::outs() << "[DEBUG] created new block\n";
 
   // DEBUGGING: call stderr to show that mutation has been set successfully
-  auto *printfFunction = module.getFunction("printf");
-  auto *activationStrPtr = builder.CreateGlobalStringPtr("[LLVM-SUPERMUTATE] ACTIVATE MUTATION %d AT %s\n");
-  std::vector<llvm::Value*> printfArgs = {
-    llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, activationStrPtr, zeroConstant),
-    strtolResult,
-    llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
-  };
-  builder.CreateCall(printfFunction->getFunctionType(), printfFunction, printfArgs, "");
-  llvm::outs() << "[DEBUG] added debugging statement\n";
+  // auto *printfFunction = module.getFunction("printf");
+  // auto *activationStrPtr = builder.CreateGlobalStringPtr("[LLVM-SUPERMUTATE] ACTIVATE MUTATION %d AT %s\n");
+  // std::vector<llvm::Value*> printfArgs = {
+  //   llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, activationStrPtr, zeroConstant),
+  //   strtolResult,
+  //   llvm::ConstantExpr::getInBoundsGetElementPtr(i8Type, envVarNamePtr, zeroConstant)
+  // };
+  // builder.CreateCall(printfFunction->getFunctionType(), printfFunction, printfArgs, "");
+  // llvm::outs() << "[DEBUG] added debugging statement\n";
 
   // continue to the successor block
   builder.CreateBr(successorBlock);
