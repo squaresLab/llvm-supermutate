@@ -7,6 +7,7 @@ add_library(llvmsupermutate SHARED
   Mapping/Value.cpp
   Mapping/Variable.cpp
   Mutators/BinOpcodeMutator.cpp
+  Mutators/ICmpMutator.cpp
   Mutation.cpp
   MutationEngine.cpp
   Supermutator.cpp
