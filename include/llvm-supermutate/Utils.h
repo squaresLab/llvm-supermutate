@@ -69,4 +69,28 @@ std::set<llvm::Value*> findReachingValues(llvm::Instruction *before) {
   return values;
 }
 
+std::set<llvm::Value*> findReachingValuesWithType(llvm::Instruction *before, llvm::Type *type) {
+  std::set<llvm::Value*> output;
+
+  for (auto *value : findReachingValues(before)) {
+    if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(value)) {
+      if (alloca->getAllocatedType() == type) {
+        output.insert(value);
+      }
+    }
+    if (auto *globalVariable = llvm::dyn_cast<llvm::GlobalVariable>(value)) {
+      if (globalVariable->getType() == type) {
+        output.insert(value);
+      }
+    }
+    if (auto *argument = llvm::dyn_cast<llvm::Argument>(value)) {
+      if (argument->getType() == type) {
+        output.insert(value);
+      }
+    }
+  }
+
+  return output;
+}
+
 }
