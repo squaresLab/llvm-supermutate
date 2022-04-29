@@ -57,6 +57,7 @@ Supermutator SupermutatorConfig::build(llvm::Module &module) const {
   // TODO add mutators
   supermutator.addMutator(new BinOpcodeMutator(supermutator.getMutationEngine()));
   supermutator.addMutator(new ICmpMutator(supermutator.getMutationEngine()));
+  supermutator.addMutator(new LoadMutator(supermutator.getMutationEngine()));
 
   return supermutator;
 }
