@@ -30,10 +30,9 @@ const llvm::DebugLoc& InstructionInfo::getDebugLoc() const {
 
 llvm::Optional<std::pair<unsigned, unsigned>> InstructionInfo::getLineCol() const {
   auto &debugLoc = getDebugLoc();
-  if  (debugLoc.isImplicitCode()) {
+  if (debugLoc.get() == nullptr || debugLoc.isImplicitCode()) {
     return llvm::Optional<std::pair<unsigned, unsigned>>();
   }
-
   return llvm::Optional<std::pair<unsigned, unsigned>>({debugLoc.getLine(), debugLoc.getCol()});
 }
 

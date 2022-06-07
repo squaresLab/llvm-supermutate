@@ -33,6 +33,9 @@ bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
 }
 
 void Supermutator::run() {
+  // write llvm2source table
+  mutationEngine.writeSourceMapping("source-mapping.json");
+
   llvm::outs() << "DEBUG: finding mutable instructions...\n";
   std::unordered_set<llvm::Instruction*> instructions;
   for (llvm::Function &function : module) {
@@ -54,8 +57,6 @@ void Supermutator::run() {
   }
   llvm::outs() << "DEBUG: finished generating mutations\n";
 
-  // write llvm2source table
-  mutationEngine.writeSourceMapping("source-mapping.json");
   mutationEngine.writeMutationTable("mutations.json");
   mutationEngine.writeMutatedBitcode(outputFilename);
 }
