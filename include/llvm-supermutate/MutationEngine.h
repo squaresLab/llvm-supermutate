@@ -36,6 +36,9 @@ public:
   /** Writes the mutated bitcode to a given file */
   void writeMutatedBitcode(std::string const &filename);
 
+  /** Writes the source mapping to a given file */
+  void writeSourceMapping(std::string const &filename) const;
+
   /** Registers a given mutator with this engine */
   void addMutator(InstructionMutator *mutator);
 

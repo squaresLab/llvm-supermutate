@@ -54,6 +54,8 @@ void Supermutator::run() {
   }
   llvm::outs() << "DEBUG: finished generating mutations\n";
 
+  // write llvm2source table
+  mutationEngine.writeSourceMapping("source-mapping.json");
   mutationEngine.writeMutationTable("mutations.json");
   mutationEngine.writeMutatedBitcode(outputFilename);
 }

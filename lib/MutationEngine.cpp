@@ -41,6 +41,10 @@ MutationEngine::~MutationEngine() {
   }
 }
 
+void MutationEngine::writeSourceMapping(std::string const &filename) const {
+  sourceMapping->save(filename);
+}
+
 void MutationEngine::writeMutatedBitcode(std::string const &filename) {
   llvm::outs() << "writing mutated bitcode to file: " << filename << "\n";
   std::error_code error_code;
