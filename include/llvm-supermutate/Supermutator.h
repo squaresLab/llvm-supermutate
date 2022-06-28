@@ -26,6 +26,9 @@ public:
   /** Returns the associated mutation engine */
   MutationEngine& getMutationEngine() { return mutationEngine; }
 
+  /** Returns the associated source mapping */
+  LLVMToSourceMapping* getSourceMapping() { return sourceMapping; }
+
   /** Constructs the supermutant */
   void run();
 
