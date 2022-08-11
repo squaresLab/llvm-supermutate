@@ -2,6 +2,8 @@
 #include <llvm-supermutate/Mutators.h>
 #include <llvm-supermutate/SupermutatorConfig.h>
 
+#include <spdlog/spdlog.h>
+
 #include <experimental/filesystem>
 #include <fstream>
 
@@ -9,10 +11,7 @@ namespace llvmsupermutate {
 
 SupermutatorConfig SupermutatorConfig::load(std::string const &filename) {
   if (!std::experimental::filesystem::exists(filename)) {
-    llvm::errs()
-      << "FATAL ERROR: configuration file not found: "
-      << filename
-      << "\n";
+    spdlog::error("configuration file not found: {}", filename);
     exit(1);
   }
 
@@ -25,8 +24,12 @@ SupermutatorConfig SupermutatorConfig::load(std::string const &filename) {
 SupermutatorConfig SupermutatorConfig::load(nlohmann::json j) {
   SupermutatorConfig config;
 
+  // TODO produce an error (or warning) if an unrecognized field appears in the config
+
   if (j.contains("filenames")) {
+    spdlog::debug("mutation will be restricted to certain files");
     for (auto& filename : j["filenames"]) {
+      spdlog::debug("allowing file to be mutated: {}", filename);
       config.restrictToFiles.emplace(filename);
     }
   }
@@ -41,7 +44,7 @@ SupermutatorConfig SupermutatorConfig::load(nlohmann::json j) {
 }
 
 Supermutator SupermutatorConfig::build(llvm::Module &module) const {
-  auto supermutator = Supermutator(module);
+  auto supermutator = Supermutator(module, restrictToFiles);
 
   // TODO specify custom output directory
 

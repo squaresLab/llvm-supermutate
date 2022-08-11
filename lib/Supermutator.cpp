@@ -1,14 +1,19 @@
 #include <llvm-supermutate/Supermutator.h>
 #include <llvm-supermutate/InstructionFilters.h>
 
+#include <spdlog/spdlog.h>
+
 #include <unordered_set>
 
 
 namespace llvmsupermutate {
 
-Supermutator::Supermutator(llvm::Module &module)
+Supermutator::Supermutator(
+  llvm::Module &module,
+  std::set<std::string> const &restrictToFiles
+)
 : module(module),
-  sourceMapping(LLVMToSourceMapping::build(module)),
+  sourceMapping(LLVMToSourceMapping::build(module, restrictToFiles)),
   mutationEngine(module, sourceMapping),
   outputFilename("supermutant.bc")
 {
@@ -33,10 +38,14 @@ bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
 }
 
 void Supermutator::run() {
-  // write llvm2source table
-  mutationEngine.writeSourceMapping("source-mapping.json");
+  spdlog::info("performing supermutation...");
 
-  llvm::outs() << "DEBUG: finding mutable instructions...\n";
+  // write llvm2source table
+  spdlog::debug("writing source mapping to disk...");
+  mutationEngine.writeSourceMapping("source-mapping.json");
+  spdlog::debug("wrote source mapping to disk");
+
+  spdlog::debug("finding mutable instructions...");
   std::unordered_set<llvm::Instruction*> instructions;
   for (llvm::Function &function : module) {
     for (auto &block : function) {
@@ -46,16 +55,13 @@ void Supermutator::run() {
       }
     }
   }
-  llvm::outs()
-    << "DEBUG: found "
-    << instructions.size()
-    << " mutable instructions\n";
+  spdlog::debug("found {} mutable instructions", instructions.size());
 
-  llvm::outs() << "DEBUG: generating mutations...\n";
+  spdlog::debug("generating mutations...");
   for (auto instruction : instructions) {
     mutationEngine.mutate(instruction);
   }
-  llvm::outs() << "DEBUG: finished generating mutations\n";
+  spdlog::debug("finished generating mutations");
 
   mutationEngine.writeMutationTable("mutations.json");
   mutationEngine.writeMutatedBitcode(outputFilename);

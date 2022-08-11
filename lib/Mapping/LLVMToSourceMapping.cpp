@@ -5,13 +5,17 @@
 #include <fstream>
 #include <iomanip>
 #include <ostream>
+#include <set>
 
 using json = nlohmann::json;
 
 namespace llvmsupermutate {
 
-LLVMToSourceMapping* LLVMToSourceMapping::build(llvm::Module &module) {
-  LLVMToSourceMapping* mapping = new LLVMToSourceMapping();
+LLVMToSourceMapping* LLVMToSourceMapping::build(
+  llvm::Module &module,
+  std::set<std::string> const &restrictToFiles
+) {
+  LLVMToSourceMapping* mapping = new LLVMToSourceMapping(restrictToFiles);
 
   for (llvm::GlobalVariable &variable : module.globals()) {
     mapping->getOrCreate(llvm::cast<llvm::Value>(&variable));
@@ -21,11 +25,18 @@ LLVMToSourceMapping* LLVMToSourceMapping::build(llvm::Module &module) {
     mapping->build(function);
   }
 
+  spdlog::info("source mapping contains {} files", mapping->files.size());
+  spdlog::info("source mapping contains {} functions", mapping->functions.size());
+  spdlog::info("source mapping contains {} instructions", mapping->instructions.size());
+
   return mapping;
 }
 
-LLVMToSourceMapping::LLVMToSourceMapping() noexcept
-: files(),
+LLVMToSourceMapping::LLVMToSourceMapping(
+  std::set<std::string> const &restrictToFiles
+) noexcept
+: restrictToFiles(restrictToFiles),
+  files(),
   functions(),
   globals(),
   instructions(),
@@ -268,6 +279,14 @@ void LLVMToSourceMapping::build(llvm::Function &function) {
   auto *file = subprogram->getFile();
   if (file == nullptr) {
     llvm::errs() << "Skipping function without DIFile: " << function.getName() << "\n";
+    return;
+  }
+
+  // should we map this file?
+  // TODO do we need to normalize filenames
+  auto filename = file->getFilename().str();
+  if (!restrictToFiles.empty() && restrictToFiles.find(filename) == restrictToFiles.end()) {
+    spdlog::debug("skipping function [{}]: file is not mutable [{}]", function.getName().str(), filename);
     return;
   }
 
