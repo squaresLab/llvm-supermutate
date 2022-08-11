@@ -74,26 +74,27 @@ json LLVMToSourceMapping::toJSON() const {
   return {
     {"files", filesToJSON()},
     {"functions", functionsToJSON()},
-    {"globals", globalsToJSON()},
-    {"instructions", instructionsToJSON()},
-    {"variables", variablesToJSON()},
-    {"values", valuesToJSON()}
+    {"instructions", instructionsToJSON()}
   };
 }
 
 json LLVMToSourceMapping::filesToJSON() const {
+  spdlog::debug("converting source mapping [files] to JSON...");
   json j = json::array();
   for (auto *fileInfo : files) {
     j.push_back(fileInfo->toJSON());
   }
+  spdlog::debug("converted source mapping [files] to JSON");
   return j;
 }
 
 json LLVMToSourceMapping::functionsToJSON() const {
+  spdlog::debug("converting source mapping [functions] to JSON...");
   json j = json::array();
   for (auto *functionInfo : functions) {
     j.push_back(functionInfo->toJSON());
   }
+  spdlog::debug("converted source mapping [functions] to JSON");
   return j;
 }
 
@@ -114,10 +115,12 @@ json LLVMToSourceMapping::valuesToJSON() const {
 }
 
 json LLVMToSourceMapping::instructionsToJSON() const {
+  spdlog::debug("converting source mapping [instructions] to JSON...");
   json j = json::array();
   for (auto *instructionInfo : instructions) {
     j.push_back(instructionInfo->toJSON());
   }
+  spdlog::debug("converted source mapping [instructions] to JSON");
   return j;
 }
 
