@@ -27,7 +27,7 @@ RUN mkdir -p /opt/llvmsupermutate/bin \
       -DCMAKE_CXX_COMPILER=/opt/llvm11/bin/clang++ \
       -DCMAKE_LINKER=/opt/llvm11/bin/lld \
       -DCMAKE_INSTALL_PREFIX="${INSTALL_TO}" \
-      -DCMAKE_CXX_FLAGS="-std=c++14 -I/opt/llvm11/include -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS" \
+      -DCMAKE_CXX_FLAGS="-fPIC -std=c++14 -I/opt/llvm11/include -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS" \
       .. \
  && ninja \
  && ninja install \
