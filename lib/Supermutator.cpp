@@ -1,5 +1,6 @@
 #include <llvm-supermutate/Supermutator.h>
 #include <llvm-supermutate/InstructionFilters.h>
+#include <llvm-supermutate/Utils.h>
 
 #include <spdlog/spdlog.h>
 
@@ -31,8 +32,10 @@ void Supermutator::addFilter(std::unique_ptr<InstructionFilter> filter) {
 
 bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
   for (auto &&filter : filters) {
-    if (!filter->isMutable(instruction))
+    if (!filter->isMutable(instruction)) {
+      spdlog::debug("instruction removed by filter [{}]: {}", filter->describe(), describeInstruction(instruction));
       return false;
+    }
   }
   return true;
 }
