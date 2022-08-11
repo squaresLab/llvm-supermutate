@@ -12,7 +12,11 @@ namespace llvmsupermutate {
 
 class Supermutator {
 public:
-  Supermutator(llvm::Module &module, std::set<std::string> const &restrictToFiles);
+  Supermutator(
+    llvm::Module &module,
+    std::set<std::string> const &restrictToFiles,
+    std::set<std::string> const &restrictToFunctions
+  );
 
   /** Adds a new mutator */
   void addMutator(InstructionMutator *mutator);
@@ -22,6 +26,9 @@ public:
 
   /** Determines whether a given instruction is considered to be mutable */
   bool isMutable(llvm::Instruction const &instruction) const;
+
+  /** Determines whether a given function is considered to be mutable */
+  bool isMutable(llvm::Function const &function) const;
 
   /** Returns the associated mutation engine */
   MutationEngine& getMutationEngine() { return mutationEngine; }
@@ -34,6 +41,8 @@ public:
 
 private:
   llvm::Module &module;
+  std::set<std::string> restrictToFiles;
+  std::set<std::string> restrictToFunctions;
   LLVMToSourceMapping *sourceMapping;
   MutationEngine mutationEngine;
 

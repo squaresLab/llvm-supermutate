@@ -35,7 +35,9 @@ SupermutatorConfig SupermutatorConfig::load(nlohmann::json j) {
   }
 
   if (j.contains("functions")) {
+    spdlog::debug("mutation will be restricted to certain functions");
     for (auto& function : j["functions"]) {
+      spdlog::debug("allowing function to be mutated: {}", function);
       config.restrictToFunctions.emplace(function);
     }
   }
@@ -44,7 +46,11 @@ SupermutatorConfig SupermutatorConfig::load(nlohmann::json j) {
 }
 
 Supermutator SupermutatorConfig::build(llvm::Module &module) const {
-  auto supermutator = Supermutator(module, restrictToFiles);
+  auto supermutator = Supermutator(
+    module,
+    restrictToFiles,
+    restrictToFunctions
+  );
 
   // TODO specify custom output directory
 

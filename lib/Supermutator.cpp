@@ -11,9 +11,12 @@ namespace llvmsupermutate {
 
 Supermutator::Supermutator(
   llvm::Module &module,
-  std::set<std::string> const &restrictToFiles
+  std::set<std::string> const &restrictToFiles,
+  std::set<std::string> const &restrictToFunctions
 )
 : module(module),
+  restrictToFiles(restrictToFiles),
+  restrictToFunctions(restrictToFunctions),
   sourceMapping(LLVMToSourceMapping::build(module, restrictToFiles)),
   mutationEngine(module, sourceMapping),
   outputFilename("supermutant.bc")
@@ -40,6 +43,34 @@ bool Supermutator::isMutable(llvm::Instruction const &instruction) const {
   return true;
 }
 
+bool Supermutator::isMutable(llvm::Function const &function) const {
+  auto *subprogram = function.getSubprogram();
+  if (subprogram == nullptr) {
+    return false;
+  }
+
+  auto *file = subprogram->getFile();
+  if (file == nullptr) {
+    return false;
+  }
+
+  // TODO normalize filenames!
+  // is this file mutable?
+  auto filename = file->getFilename().str();
+  if (!restrictToFiles.empty() && restrictToFiles.find(filename) == restrictToFiles.end()) {
+    return false;
+  }
+
+  // is this function mutable?
+  auto name = function.getName().str();
+  if (!restrictToFunctions.empty() && restrictToFunctions.find(name) == restrictToFunctions.end()) {
+    spdlog::debug("skipping mutations to function: {}", name);
+    return false;
+  }
+  
+  return true;
+}
+
 void Supermutator::run() {
   spdlog::info("performing supermutation...");
 
@@ -51,6 +82,9 @@ void Supermutator::run() {
   spdlog::debug("finding mutable instructions...");
   std::unordered_set<llvm::Instruction*> instructions;
   for (llvm::Function &function : module) {
+    if (!isMutable(function)) {
+      continue;
+    }
     for (auto &block : function) {
       for (auto &instruction : block) {
         if (isMutable(instruction))
