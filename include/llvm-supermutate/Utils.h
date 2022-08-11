@@ -9,6 +9,17 @@
 
 namespace llvmsupermutate {
 
+std::string describeInstruction(llvm::Instruction const &instruction) {
+  std::string description;
+  llvm::raw_string_ostream os(description);
+  instruction.print(os);
+  return description;
+}
+
+std::string describeInstruction(llvm::Instruction const *instruction) {
+  return describeInstruction(*instruction);
+}
+
 std::set<llvm::BasicBlock*> transitivePredecessors(llvm::BasicBlock* block) {
   std::set<llvm::BasicBlock*> blocks;
 
