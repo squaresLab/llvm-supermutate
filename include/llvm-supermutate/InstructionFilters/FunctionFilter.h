@@ -28,6 +28,10 @@ public:
     return isMutable(instruction.getFunction());
   }
 
+  std::string describe() const override {
+    return "FunctionFilter";
+  }
+
 private:
   std::unordered_set<std::string> restrictToFunctions;
 };

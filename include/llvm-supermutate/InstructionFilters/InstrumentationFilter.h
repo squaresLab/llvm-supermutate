@@ -23,6 +23,10 @@ public:
     }
     return true;
   }
+
+  std::string describe() const override {
+    return "InstrumentationFilter";
+  }
 };
 
 } // llvmsupermutate

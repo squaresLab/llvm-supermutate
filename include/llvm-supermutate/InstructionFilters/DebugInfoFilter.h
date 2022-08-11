@@ -18,6 +18,10 @@ public:
     return sourceMapping->hasInfo(const_cast<llvm::Instruction*>(&instruction));
   }
 
+  std::string describe() const override {
+    return "DebugInfoFilter";
+  }
+
 private:
   LLVMToSourceMapping *sourceMapping;
 };
