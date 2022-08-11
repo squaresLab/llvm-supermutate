@@ -12,7 +12,7 @@ namespace llvmsupermutate {
 
 class Supermutator {
 public:
-  Supermutator(llvm::Module &module);
+  Supermutator(llvm::Module &module, std::set<std::string> const &restrictToFiles);
 
   /** Adds a new mutator */
   void addMutator(InstructionMutator *mutator);

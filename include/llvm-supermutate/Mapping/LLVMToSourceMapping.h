@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -22,9 +23,12 @@ namespace llvmsupermutate {
 
 class LLVMToSourceMapping {
 public:
-  static LLVMToSourceMapping* build(llvm::Module &module);
+  static LLVMToSourceMapping* build(
+    llvm::Module &module,
+    std::set<std::string> const &restrictToFiles
+  );
 
-  LLVMToSourceMapping() noexcept;
+  LLVMToSourceMapping(std::set<std::string> const &restrictToFiles) noexcept;
   ~LLVMToSourceMapping();
 
   FileInfo* get(llvm::DIFile *file);
@@ -65,6 +69,8 @@ public:
   nlohmann::json toJSON() const;
 
 private:
+  std::set<std::string> restrictToFiles;
+
   // TODO use unique_ptr
   std::vector<FileInfo*> files;
   std::vector<FunctionInfo*> functions;

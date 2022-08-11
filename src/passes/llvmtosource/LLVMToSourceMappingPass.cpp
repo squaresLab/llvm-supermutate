@@ -17,6 +17,12 @@ static cl::opt<std::string> outputFilename(
   cl::init("source-mapping.json")
 );
 
+static cl::list<std::string> restrictToFiles(
+  "restrict-mapping-to-files",
+  cl::desc("The name of source files to which mapping should be restricted."),
+  cl::value_desc("filename")
+);
+
 llvmsupermutate::LLVMToSourceMappingPass::~LLVMToSourceMappingPass() {
   if (mapping) {
     delete mapping;
@@ -24,9 +30,14 @@ llvmsupermutate::LLVMToSourceMappingPass::~LLVMToSourceMappingPass() {
 }
 
 bool llvmsupermutate::LLVMToSourceMappingPass::runOnModule(Module &module) {
+  std::set<std::string> restrictToFilesSet;
+  for (auto &filename : restrictToFiles) {
+    restrictToFilesSet.emplace(filename);
+  }
+
   spdlog::set_level(spdlog::level::debug);
   spdlog::info("generating source mapping...");
-  mapping = LLVMToSourceMapping::build(module);
+  mapping = LLVMToSourceMapping::build(module, restrictToFilesSet);
   spdlog::info("saving source mapping to disk: {}", outputFilename);
   mapping->save(outputFilename);
   spdlog::info("saved source mapping to disk");
