@@ -20,6 +20,7 @@ target_include_directories(llvmsupermutate
     ${LLVM_INCLUDE_DIRS}
     ${LLVMSUPERMUTATE_INCLUDE_DIRS}
     nlohmann_json::nlohmann_json
+    spdlog::spdlog
 )
 
 target_compile_definitions(llvmsupermutate
@@ -32,7 +33,12 @@ target_compile_options(llvmsupermutate
     -Wall -Werror -fno-rtti -g
 )
 
-target_link_libraries(llvmsupermutate PRIVATE nlohmann_json::nlohmann_json stdc++fs)
+target_link_libraries(llvmsupermutate
+  PRIVATE
+    nlohmann_json::nlohmann_json
+    stdc++fs
+    spdlog::spdlog
+)
 
 install(TARGETS llvmsupermutate
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"

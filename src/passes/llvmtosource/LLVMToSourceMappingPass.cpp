@@ -1,5 +1,7 @@
 #include "LLVMToSourceMappingPass.h"
 
+#include <spdlog/spdlog.h>
+
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
@@ -22,8 +24,12 @@ llvmsupermutate::LLVMToSourceMappingPass::~LLVMToSourceMappingPass() {
 }
 
 bool llvmsupermutate::LLVMToSourceMappingPass::runOnModule(Module &module) {
+  spdlog::set_level(spdlog::level::debug);
+  spdlog::info("generating source mapping...");
   mapping = LLVMToSourceMapping::build(module);
+  spdlog::info("saving source mapping to disk: {}", outputFilename);
   mapping->save(outputFilename);
+  spdlog::info("saved source mapping to disk");
   return false;
 }
 

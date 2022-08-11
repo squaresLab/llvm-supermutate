@@ -7,6 +7,7 @@ target_include_directories(llvmtosource
     ${LLVM_INCLUDE_DIRS}
     ${LLVMSUPERMUTATE_INCLUDE_DIRS}
     nlohmann_json::nlohmann_json
+    spdlog::spdlog
 )
 
 target_compile_definitions(llvmtosource
@@ -23,6 +24,7 @@ target_link_libraries(llvmtosource
   PUBLIC
     llvmsupermutate
     nlohmann_json::nlohmann_json
+    spdlog::spdlog
 )
 
 install(TARGETS llvmtosource

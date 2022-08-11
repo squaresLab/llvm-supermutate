@@ -1,5 +1,7 @@
 #include "LLVMSupermutatorPass.h"
 
+#include <spdlog/spdlog.h>
+
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/Support/CommandLine.h>
@@ -20,6 +22,7 @@ using namespace llvm;
 using namespace llvmsupermutate;
 
 bool llvmsupermutate::LLVMSupermutatorPass::runOnModule(Module &module) {
+  spdlog::set_level(spdlog::level::debug);
   auto config = SupermutatorConfig::load(configurationFile);
   auto supermutator = config.build(module);
   supermutator.run();

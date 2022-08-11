@@ -1,5 +1,7 @@
 #include <llvm-supermutate/Mapping/LLVMToSourceMapping.h>
 
+#include <spdlog/spdlog.h>
+
 #include <fstream>
 #include <iomanip>
 #include <ostream>
@@ -68,6 +70,7 @@ void LLVMToSourceMapping::save(std::string const &filename) const {
 }
 
 json LLVMToSourceMapping::toJSON() const {
+  spdlog::debug("converting source mapping to JSON...");
   return {
     {"files", filesToJSON()},
     {"functions", functionsToJSON()},
