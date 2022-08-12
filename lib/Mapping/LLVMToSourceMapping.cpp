@@ -7,6 +7,8 @@
 #include <ostream>
 #include <set>
 
+#include <llvm-supermutate/Utils.h>
+
 using json = nlohmann::json;
 
 namespace llvmsupermutate {
@@ -283,10 +285,9 @@ void LLVMToSourceMapping::build(llvm::Function &function) {
   }
 
   // should we map this file?
-  // TODO do we need to normalize filenames
-  auto filename = file->getFilename().str();
-  if (!restrictToFiles.empty() && restrictToFiles.find(filename) == restrictToFiles.end()) {
-    spdlog::debug("skipping function [{}]: file is not mutable [{}]", function.getName().str(), filename);
+  auto absoluteFilepath = getLlvmFileAbsPath(file);
+  if (!restrictToFiles.empty() && restrictToFiles.find(absoluteFilepath) == restrictToFiles.end()) {
+    spdlog::debug("skipping function [{}]: file is not mutable [{}]", function.getName().str(), absoluteFilepath);
     return;
   }
 

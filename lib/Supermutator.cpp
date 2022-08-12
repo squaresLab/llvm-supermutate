@@ -54,10 +54,9 @@ bool Supermutator::isMutable(llvm::Function const &function) const {
     return false;
   }
 
-  // TODO normalize filenames!
   // is this file mutable?
-  auto filename = file->getFilename().str();
-  if (!restrictToFiles.empty() && restrictToFiles.find(filename) == restrictToFiles.end()) {
+  auto absoluteFilepath = getLlvmFileAbsPath(file);
+  if (!restrictToFiles.empty() && restrictToFiles.find(absoluteFilepath) == restrictToFiles.end()) {
     return false;
   }
 
