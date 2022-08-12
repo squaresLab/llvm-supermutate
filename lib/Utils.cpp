@@ -1,6 +1,19 @@
 #include <llvm-supermutate/Utils.h>
 
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
+
 namespace llvmsupermutate {
+
+std::string getLlvmFileAbsPath(llvm::DIFile const *file) {
+  fs::path dirPath(file->getDirectory().str());
+  fs::path filePath(file->getFilename().str());
+  if (filePath.is_absolute()) {
+    return fs::canonical(filePath).string();
+  }
+  return fs::canonical(fs::absolute(filePath, dirPath)).string();
+}
 
 std::string describeInstruction(llvm::Instruction const &instruction) {
   std::string description;
