@@ -17,6 +17,7 @@ public:
   llvm::DIFile* getFile() const;
   std::string getFilename() const;
   std::string getDirectory() const;
+  std::string getPath() const;
 
   nlohmann::json toJSON() const;
 

@@ -1,5 +1,7 @@
 #include <llvm-supermutate/Mapping/File.h>
 
+#include <llvm-supermutate/Utils.h>
+
 using json = nlohmann::json;
 
 namespace llvmsupermutate {
@@ -24,10 +26,16 @@ std::string FileInfo::getDirectory() const {
   return file->getDirectory().str();
 }
 
+std::string FileInfo::getPath() const {
+  return getLlvmFileAbsPath(file);
+}
+
 json FileInfo::toJSON() const {
   return {
     {"id", id},
     {"filename", getFilename()},
+    {"directory", getDirectory()},
+    {"path", getPath()}
   };
 }
 
